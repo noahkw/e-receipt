@@ -10,12 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@fontsource/roboto": "^5.0.14",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
     "@types/pdf-parse": "^1.1.4",
-    "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^4.5.136",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "rewe-ebon-parser": "^0.4.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
