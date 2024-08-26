@@ -1,20 +1,6 @@
 import { ChangeEvent, createRef, useEffect, useState } from "react"
 import * as pdfjs from "pdfjs-dist"
-import { AppBar, Button, IconButton, styled, Toolbar } from "@mui/material"
-import { Add, CloudUpload, Remove } from "@mui/icons-material"
 import "./ReceiptUpload.css"
-
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1
-})
 
 export function ReceiptUpload() {
   const [file, setFile] = useState<File | null>(null)
@@ -53,7 +39,7 @@ export function ReceiptUpload() {
 
       const renderContext = {
         canvasContext: context,
-        viewport: viewport,
+        viewport: viewport
       }
 
       await page.render(renderContext).promise
@@ -62,20 +48,10 @@ export function ReceiptUpload() {
 
   return (
     <>
-      <canvas className="canvas" ref={canvas} onLoad={() => setLoaded(true)}></canvas>
-      <AppBar position="fixed" color="primary" sx={{ top: "auto", bottom: 0 }}>
-        <Toolbar>
-          <Button component="label" color="secondary" startIcon={<CloudUpload />}>
-            <VisuallyHiddenInput type="file" onChange={onChange} />
-          </Button>
-          <IconButton color="inherit" onClick={() => setScale(scale * 1.1)}>
-            <Add />
-          </IconButton>
-          <IconButton color="inherit" onClick={() => setScale(scale / 1.1)}>
-            <Remove />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <input type="file" onChange={onChange} />
+      <canvas ref={canvas} onLoad={() => setLoaded(true)}></canvas>
+      <button onClick={() => setScale(scale * 1.1)}>+</button>
+      <button onClick={() => setScale(scale / 1.1)}>-</button>
     </>
   )
 }
