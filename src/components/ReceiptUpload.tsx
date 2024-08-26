@@ -1,13 +1,14 @@
 import { createRef, useEffect, useState } from "react"
 import * as pdfjs from "pdfjs-dist"
-import "./ReceiptUpload.css"
 import { Button } from "primereact/button"
 import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload"
+import { Panel } from "primereact/panel"
+import { Slider, SliderChangeEvent } from "primereact/slider"
 
 export function ReceiptUpload() {
   const [file, setFile] = useState<File | null>(null)
   const [loaded, setLoaded] = useState(false)
-  const [scale, setScale] = useState(1.0)
+  const [scale, setScale] = useState(50)
   const canvas = createRef<HTMLCanvasElement>()
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export function ReceiptUpload() {
     const pdf = await pdfjs.getDocument(bytes).promise
 
     const page = await pdf.getPage(1)
-    const viewport = page.getViewport({ scale: scale })
+    const viewport = page.getViewport({ scale: scale / 100 })
 
     console.log(await page.getTextContent())
 
@@ -41,22 +42,47 @@ export function ReceiptUpload() {
 
       const renderContext = {
         canvasContext: context,
-        viewport: viewport
+        viewport: viewport,
       }
 
       await page.render(renderContext).promise
     }
   }
 
+  function setScaleChecked(value: number) {
+    const clampedValue = Math.max(20, Math.min(300, value))
+    setScale(clampedValue)
+  }
+
   return (
     <>
-      <div className="card">
-        <FileUpload uploadHandler={onUpload} customUpload multiple accept="application/pdf" maxFileSize={1000000}
-                    emptyTemplate={<p className="m-0">Drag and drop PDFs to here to upload.</p>} />
+      <div className="card w-full md:w-8/12 m-auto">
+        <FileUpload
+          uploadHandler={onUpload}
+          customUpload
+          multiple
+          accept="application/pdf"
+          maxFileSize={1000000}
+          emptyTemplate={
+            <p className="m-0">Drag and drop PDFs to here to upload.</p>
+          }
+        />
       </div>
-      <canvas ref={canvas} onLoad={() => setLoaded(true)}></canvas>
-      <Button onClick={() => setScale(scale * 1.1)}>+</Button>
-      <Button onClick={() => setScale(scale / 1.1)}>-</Button>
+      {file &&
+        <div>
+          <div className="m-auto w-fit my-2 flex gap-4 items-center">
+            <Button onClick={() => setScaleChecked(scale - 20)} icon="pi pi-minus" />
+            <Slider min={20} max={300} value={scale} onChange={(e: SliderChangeEvent) => {
+              setScaleChecked(e.value as number)
+            }} className="w-32" />
+            <Button onClick={() => setScaleChecked(scale + 20)} icon="pi pi-plus" />
+          </div>
+          <Panel className="m-top-2">
+            <canvas className="m-auto" ref={canvas} onLoad={() => setLoaded(true)}></canvas>
+          </Panel>
+        </div>
+      }
+
     </>
   )
 }
