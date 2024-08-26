@@ -1,6 +1,8 @@
-import { ChangeEvent, createRef, useEffect, useState } from "react"
+import { createRef, useEffect, useState } from "react"
 import * as pdfjs from "pdfjs-dist"
 import "./ReceiptUpload.css"
+import { Button } from "primereact/button"
+import { FileUpload, FileUploadHandlerEvent } from "primereact/fileupload"
 
 export function ReceiptUpload() {
   const [file, setFile] = useState<File | null>(null)
@@ -12,9 +14,9 @@ export function ReceiptUpload() {
     void renderPdf()
   }, [file, loaded, scale])
 
-  async function onChange(event: ChangeEvent<HTMLInputElement>) {
-    if (event.target.files) {
-      setFile(event.target.files[0])
+  async function onUpload(event: FileUploadHandlerEvent) {
+    if (event.files) {
+      setFile(event.files[0])
     }
   }
 
@@ -48,10 +50,13 @@ export function ReceiptUpload() {
 
   return (
     <>
-      <input type="file" onChange={onChange} />
+      <div className="card">
+        <FileUpload uploadHandler={onUpload} customUpload multiple accept="application/pdf" maxFileSize={1000000}
+                    emptyTemplate={<p className="m-0">Drag and drop PDFs to here to upload.</p>} />
+      </div>
       <canvas ref={canvas} onLoad={() => setLoaded(true)}></canvas>
-      <button onClick={() => setScale(scale * 1.1)}>+</button>
-      <button onClick={() => setScale(scale / 1.1)}>-</button>
+      <Button onClick={() => setScale(scale * 1.1)}>+</Button>
+      <Button onClick={() => setScale(scale / 1.1)}>-</Button>
     </>
   )
 }
